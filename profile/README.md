@@ -32,7 +32,7 @@ We welcome your contributions!
 
 - **[Contributor Guide](https://github.com/choreo-idp/choreo/tree/main/docs/contributors)**
 - **[Report an Issue](https://github.com/choreo-idp/choreo/issues/new/choose)**
-- **[Join Discord](https://discord.gg/HYCgUacN)**
+- **[Join Discord](https://discord.gg/asqDFC8suT)**
 
 ## License
 
