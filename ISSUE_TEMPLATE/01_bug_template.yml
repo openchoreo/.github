@@ -29,3 +29,4 @@ body:
       description: Mention the environment details (OS, K8s, Installed plugins) that the product is running on.
     validations:
       required: false
+      

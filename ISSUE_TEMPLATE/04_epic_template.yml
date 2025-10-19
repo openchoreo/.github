@@ -1,0 +1,59 @@
+name: "📝 Create an Epic"
+description: Plan and deliver new features for the product
+labels: ["Type/Epic"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Please select the area issue is related to
+      options:
+        - Area/SecureCore
+        - Area/APIM (API Management)
+        - Area/DevOps (User CI/CD, Environment Management)
+        - Area/IDevP (Config groups, Component types, Component templates)
+        - Area/AppDevIAM (Identity and Access Management scenarios of user applications)
+        - Area/AI (AI backed features)
+        - Area/Observability (Observability section and log publishing from user apps)
+        - Area/OrgManagement (Sub organizations)
+        - Area/SystemAuthentication (Authentication of the OpenChoreo System)
+        - Area/SystemAuthorization (Access Control of the OpenChoreo System)
+        - Area/Other (Anything else which does not match above categories)
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Clear description on problem we are trying to solve
+      placeholder: |
+        This feature will ...
+    validations:
+      required: true
+  - type: input
+    id: featureRequest
+    attributes:
+      label: Feature Request Issue
+      description: Enter the related approved feature request issue link
+    validations:
+      required: true
+  - type: input
+    id: proposalDiscussion
+    attributes:
+      label: Feature Proposal Discussion
+      description: Enter the related proposal discussion link
+    validations:
+      required: false
+  - type: textarea
+    id: subtasks
+    attributes:
+      label: Sub Tasks
+      description: Add the sub tasks of the epic
+      placeholder: |
+        - [ ] Requirement gathering 
+        - [ ] Proposal preparation
+        - [ ] Milestone 01
+            - [ ] Task 01
+    validations:
+      required: true
+      
