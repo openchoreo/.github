@@ -1,6 +1,6 @@
 blank_issues_enabled: false
 contact_links:
-- name: Get help Chat on OpenChoreo Discord Channel
+- name: Get help on OpenChoreo Discord Channel
   url: https://discord.gg/WZfSUBsc
   about: "Get help from the community on Discord."
 - name: Engage with developer discussions in OpenChoreo Discord Channel
