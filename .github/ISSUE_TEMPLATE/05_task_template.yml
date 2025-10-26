@@ -17,7 +17,7 @@ body:
     validations:
       required: false
   - type: input
-    id: related issue
+    id: relatedIssue
     attributes:
       label: Related Issue
       description: Enter the parent issue related to this task.
