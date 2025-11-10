@@ -125,20 +125,21 @@ In this section, we explain how the OpenChoreo abstractions for platform enginee
 
 ## Getting Started
 
-The easiest way to try OpenChoreo is by following the **[Quick Start Guide](https://github.com/openchoreo/openchoreo/blob/main/docs/quick-start-guide.md)**. It walks you through setting up Choreo using a Dev Container, so you can start experimenting without affecting your local environment.
+The easiest way to try OpenChoreo is by following the **[Quick Start Guide](https://openchoreo.dev/docs/getting-started/quick-start-guide/)**. It walks you through setting up Choreo using a Dev Container, so you can start experimenting without affecting your local environment.
 
-For a deeper understanding of OpenChoreo’s architecture, see **[Choreo Concepts](https://github.com/openchoreo/openchoreo/blob/main/docs/choreo-concepts.md)**.
+For a deeper understanding of OpenChoreo's architecture, see **[OpenChoreo Concepts](https://openchoreo.dev/docs/category/concepts/)**.
 
-Visit **[Installation Guide](https://github.com/openchoreo/openchoreo/blob/main/docs/install-guide.md)** to learn more about installation methods.
+Visit **[Installation Guide](https://openchoreo.dev/docs/getting-started/single-cluster/)** to learn more about installation methods.
 
 ## Samples
 
 Explore hands-on examples to help you configure and deploy your applications using OpenChoreo.
 
-- **[Configuring Choreo](https://github.com/openchoreo/openchoreo/blob/main/samples/configuring-choreo/)** – Set up organizations, environments, data planes, and deployment pipelines.
-- **[Deploying Applications](https://github.com/openchoreo/openchoreo/blob/main/samples/deploying-applications/)** – Deploy services, web apps, and scheduled tasks.
+- **[Platform Configuration](https://github.com/openchoreo/openchoreo/blob/main/samples/platform-config)** – Set up deployment pipelines and environments.
+- **[Deploy from Source](https://github.com/openchoreo/openchoreo/blob/main/samples/from-source)** – Deploy services and web apps from source code.
+- **[Deploy from Image](https://github.com/openchoreo/openchoreo/blob/main/samples/from-image)** – Deploy pre-built container images.
 
-Check out the **[Samples Directory](https://github.com/openchoreo/openchoreo/blob/main/samples/)** for more details.
+Check out the **[Samples Directory](https://github.com/openchoreo/openchoreo/blob/main/samples)** for more details.
 
 ## Join the Community & Contribute
 
@@ -152,7 +153,7 @@ Whether you’re fixing a bug, improving documentation, or suggesting new featur
 We’re excited to have you onboard!
 
 ## Roadmap
-Explore the OpenChoreo roadmap, including completed milestones and upcoming plans, in our **[Roadmap]( https://github.com/orgs/openchoreo/projects/1)**.
+Explore the OpenChoreo roadmap, including completed milestones and upcoming plans, in our **[OpenChoreo Roadmap](https://github.com/orgs/openchoreo/projects/4/views/2)**.
 
 ## License
 OpenChoreo is licensed under Apache 2.0. See the **[LICENSE](https://github.com/openchoreo/openchoreo/blob/main/LICENSE)** file for full details.
