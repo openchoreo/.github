@@ -1,2 +1,2 @@
 # .github
-Organization profile content for the Choreo IDP
+Organization profile content for OpenChoreo

@@ -3,8 +3,7 @@ Internal Developer Platform
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-
-OpenChoreo is a complete, open-source Internal Developer Platform (IDP) designed for platform engineering (PE) teams who want to streamline developer workflows and deliver Internal Developer Portals without having to build everything from scratch. OpenChoreo orchestrates many CNCF and other projects to give a comprehensive framework for PE teams to build the platform they want.
+OpenChoreo is a developer platform for Kubernetes offering development and architecture abstractions, a Backstage-powered developer portal, application CI/CD, GitOps, and observability. It composes CNCF and complementary projects into a modular, extensible framework that provides both strong governance for platform engineers and simplified abstractions for developers.
 
 ## Why OpenChoreo?
 Kubernetes gives you powerful primitives like Namespaces, Deployments, CronJobs, Services and NetworkPolicies—but they are too low-level for most developers.
