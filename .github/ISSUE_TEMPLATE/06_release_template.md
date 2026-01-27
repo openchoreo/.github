@@ -41,7 +41,7 @@ Skip these steps if you are creating a patch release (example: v1.4.1).
     - [ ] If there are changes, commit, submit a PR to the `main` branch:
         ```shell
         git add VERSION
-        git commit -m "Bump version to ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+        git commit -s -m "chore: bump version to ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
         ```
     - [ ] Get the PR merged into the `main` branch, wait for [Build and Test](https://github.com/openchoreo/openchoreo/actions/workflows/build-and-test.yml) to pass
     - [ ] Reset your local branch again with the `main` branch:
@@ -63,7 +63,7 @@ Skip these steps if you are creating a patch release (example: v1.4.1).
     git checkout -b release-next-v${MAJOR_VERSION}.$((MINOR_VERSION + 1)).${PATCH_VERSION} ${GIT_REMOTE}/main
     echo "${MAJOR_VERSION}.$((MINOR_VERSION + 1)).${PATCH_VERSION}" > VERSION
     git add VERSION
-    git commit -m "Bump version to ${MAJOR_VERSION}.$((MINOR_VERSION + 1)).${PATCH_VERSION}"
+    git commit -s -m "chore: bump version to ${MAJOR_VERSION}.$((MINOR_VERSION + 1)).${PATCH_VERSION}"
     ```
 - [ ] Submit a PR to the `main` branch and get it merged:
 
@@ -86,7 +86,7 @@ Skip these steps if you are creating a major or minor release (example: v1.4.0).
     - [ ] If there are changes, commit, submit a PR to the `release-v${MAJOR_VERSION}.${MINOR_VERSION}` branch:
         ```shell
         git add VERSION
-        git commit -m "Bump version to ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+        git commit -s -m "chore: bump version to ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
         ```
     - [ ] Get the PR merged into the `release-v${MAJOR_VERSION}.${MINOR_VERSION}`, wait for [Build and Test](https://github.com/openchoreo/openchoreo/actions/workflows/build-and-test.yml) to pass
     - [ ] Reset your local branch again with the `release-v${MAJOR_VERSION}.${MINOR_VERSION}` branch:
