@@ -34,6 +34,7 @@ Skip these steps if you are creating a patch release (example: v1.4.1).
     ```shell
     echo "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}" > VERSION
     ```
+- [ ] Update the hardcoded versions in the k3d setup scripts (`install/k3d/k3d-prerequisites.sh` and `install/k3d/k3d-observability-plane.sh`) to match the release
 - [ ] Verify whether there are no changes to the `VERSION` file:
     ```shell
     git diff VERSION
