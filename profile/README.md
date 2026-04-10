@@ -2,7 +2,7 @@
   <p></p><p></p>
   <p>
     <img 
-    src="./images/openchoreo-horizontal-color.png" alt="OpenChoreo Logo" 
+    src="https://raw.githubusercontent.com/openchoreo/.github/main/profile/images/openchoreo-horizontal-color.png" alt="OpenChoreo Logo"
     width="600"/>
   </p>
   <h1 style="font-size: 1.5em;">
@@ -41,7 +41,7 @@ OpenChoreo introduces a combination of platform abstractions and application abs
 
 Platform engineers use the following abstractions to create their internal developer platform:
 <div align="left">
-  <img src="./images/openchoreo-platform-abstractions.png" alt="OpenChoreo Platform Abstractions" width="800"/>
+  <img src="https://raw.githubusercontent.com/openchoreo/.github/main/profile/images/openchoreo-platform-abstractions.png" alt="OpenChoreo Platform Abstractions" width="800"/>
 </div>
 </br>
 
@@ -58,7 +58,7 @@ Platform engineers use the following abstractions to create their internal devel
 
 Project managers, architects, and developers use the following abstractions to manage the organization of their work:
 <div align="left">
-  <img src="./images/openchoreo-development-abstractions.png" alt="OpenChoreo Development Abstractions" width="800"/>
+  <img src="https://raw.githubusercontent.com/openchoreo/.github/main/profile/images/openchoreo-development-abstractions.png" alt="OpenChoreo Development Abstractions" width="800"/>
 </div>
 </br>
 
@@ -81,7 +81,7 @@ These abstractions align with the Domain-Driven Design principles, where project
 
 Architects and developers use the following runtime abstractions to manage how components and projects operate at runtime:
 <div align="left">
-  <img src="./images/openchoreo-cell-runtime-view.png" alt="OpenChoreo Runtime view of a Project" width="600"/>
+  <img src="https://raw.githubusercontent.com/openchoreo/.github/main/profile/images/openchoreo-cell-runtime-view.png" alt="OpenChoreo Runtime view of a Project" width="600"/>
 </div>
 </br>
 
@@ -106,7 +106,7 @@ At runtime, OpenChoreo turns each Project (Bounded Context) into a Cell - a secu
 These abstractions provide the following benefits for businesses to build & operate cloud-native applications:
 
 <div align="left">
-  <img src="./images/openchoreo-ddd-to-cell-mapping.png" alt="OpenChoreo DDD-to-Cell Mapping" width="800"/>
+  <img src="https://raw.githubusercontent.com/openchoreo/.github/main/profile/images/openchoreo-ddd-to-cell-mapping.png" alt="OpenChoreo DDD-to-Cell Mapping" width="800"/>
 </div>
 </br>
 
@@ -137,7 +137,7 @@ These abstractions provide the following benefits for businesses to build & oper
 In this section, we explain how the OpenChoreo abstractions for platform engineering, code & team organization, software architecture, software engineering and operations are mapped to Kubernetes abstractions and a set of CNCF and other tools that are used to ensure the higher-level abstractions are properly maintained.
 
 <div align="left">
-  <img src="./images/openchoreo-architecture-diagram.png" alt="OpenChoreo Architecture" width="800"/>
+  <img src="https://raw.githubusercontent.com/openchoreo/.github/main/profile/images/openchoreo-architecture-diagram.png" alt="OpenChoreo Architecture" width="800"/>
 </div>
 </br>
 
