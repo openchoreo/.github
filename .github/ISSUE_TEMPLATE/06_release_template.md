@@ -6,112 +6,76 @@ labels: "type/release"
 type: Task
 ---
 
-### Release Steps
+### Prerequisites
 
-The following checklist will guide you through the necessary steps to create a new release of OpenChoreo.
-This checklist assumes you already have push access to the OpenChoreo repository.
+- [ ] `CHANGELOG.md` updated with all changes for this version
+- [ ] `VERSION` file contains `MAJOR.MINOR.PATCH` (with `-PRE_RELEASE_ID` suffix if prerelease)
+- [ ] `build-and-test` passing on the target branch
 
-### Prepare for Release
+All workflow dispatch triggers should be run from the **default branch (`main`)** of the respective repository. The workflows auto-resolve the correct target branch at runtime.
 
-- [ ] Check [existing releases](https://github.com/openchoreo/openchoreo/releases) for the desired version number.
-- [ ] Export the environment variables for use in subsequent steps:
-    ```shell
-    export MAJOR_VERSION=<MAJOR>
-    export MINOR_VERSION=<MINOR>
-    export PATCH_VERSION=<PATCH>
-    export GIT_REMOTE=upstream # This should be the upstream remote name: github.com/openchoreo/openchoreo
-    ```
+---
 
-### Prepare for Major/Minor Release (example: v1.4.0)
+### Major/Minor Release
 
-Skip these steps if you are creating a patch release (example: v1.4.1).
+1. **Release backstage-plugins**
+   - Merge a PR updating `VERSION` to `MAJOR.MINOR.PATCH` on `main`
+   - Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: full`, `MAJOR`, `MINOR`, `PATCH`
+   - Run [**Prepare Next Version**](https://github.com/openchoreo/backstage-plugins/actions) — `MAJOR`, `MINOR+1`, `0`
+   - Review and merge the version bump PR
 
-- [ ] Checkout the `main` branch, ensure it is up to date, and your local branch is clean:
-    ```shell
-    git checkout -b release-prep-v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION} ${GIT_REMOTE}/main
-    ```
-- [ ] Update the `VERSION` file with the new version number:
-    ```shell
-    echo "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}" > VERSION
-    ```
-- [ ] Update the hardcoded versions in the k3d setup scripts (`install/k3d/k3d-prerequisites.sh` and `install/k3d/k3d-observability-plane.sh`) to match the release
-- [ ] Verify whether there are no changes to the `VERSION` file:
-    ```shell
-    git diff VERSION
-    ```
-    - [ ] If there are changes, commit, submit a PR to the `main` branch:
-        ```shell
-        git add VERSION
-        git commit -s -m "chore: bump version to ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
-        ```
-    - [ ] Get the PR merged into the `main` branch, wait for [Build and Test](https://github.com/openchoreo/openchoreo/actions/workflows/build-and-test.yml) to pass
-    - [ ] Reset your local branch again with the `main` branch:
-        ```shell
-        git fetch ${GIT_REMOTE}
-        git reset --hard ${GIT_REMOTE}/main
-        ```
-- [ ] Create a new release branch:
-    ```shell
-    git checkout -b release-v${MAJOR_VERSION}.${MINOR_VERSION}
-    ```
-- [ ] Push the release branch to the OpenChoreo repository:
-    ```shell
-    git push ${GIT_REMOTE} release-v${MAJOR_VERSION}.${MINOR_VERSION}
-    ```
-- [ ] Wait for [Build and Test](https://github.com/openchoreo/openchoreo/actions/workflows/build-and-test.yml) to pass on the **new release branch**.
-- [ ] Update the OpenChoreo `main` branch to next major/minor version:
-    ```shell
-    git checkout -b release-next-v${MAJOR_VERSION}.$((MINOR_VERSION + 1)).${PATCH_VERSION} ${GIT_REMOTE}/main
-    echo "${MAJOR_VERSION}.$((MINOR_VERSION + 1)).${PATCH_VERSION}" > VERSION
-    git add VERSION
-    git commit -s -m "chore: bump version to ${MAJOR_VERSION}.$((MINOR_VERSION + 1)).${PATCH_VERSION}"
-    ```
-- [ ] Submit a PR to the `main` branch and get it merged:
+2. **Release openchoreo**
+   - Merge a PR updating `VERSION` to `MAJOR.MINOR.PATCH` on `main`
+   - Run [**Release Orchestrator**](https://github.com/openchoreo/openchoreo/actions) — `action: full`, `MAJOR`, `MINOR`, `PATCH`
+   - Verify the [draft release](https://github.com/openchoreo/openchoreo/releases) and publish it
+   - Run [**Prepare Next Version**](https://github.com/openchoreo/openchoreo/actions) — `MAJOR`, `MINOR+1`, `0`
+   - Review and merge the version bump PR
 
-### Prepare for Patch Release (example: v1.4.1)
+3. **Update docs** (on [openchoreo.github.io](https://github.com/openchoreo/openchoreo.github.io))
+   - Create a new doc version snapshot: `npm run docusaurus docs:version vMAJOR.MINOR.x`
+   - Update version constants in the new `versioned_docs/version-vMAJOR.MINOR.x/_constants.mdx`
+   - Update `docusaurus.config.ts` (lastVersion, announcementBar, versions map)
+   - Run `./scripts/clean-versions.sh`
+   - Update `docs/changelog.md` and `versioned_docs/version-vMAJOR.MINOR.x/changelog.md`
+   - Update `docs/releases/release-and-support-process.md` (supported versions, latest patch)
+   - Submit a PR to `openchoreo.github.io` with all changes
 
-Skip these steps if you are creating a major or minor release (example: v1.4.0).
+---
 
-- [ ] Checkout to the release branch, ensure it is up to date, and your local branch is clean:
-    ```shell
-    git checkout -b release-prep-v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION} ${GIT_REMOTE}/release-v${MAJOR_VERSION}.${MINOR_VERSION}
-    ```
-- [ ] Update the `VERSION` file with the new version number:
-    ```shell
-    echo "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}" > VERSION
-    ```
-- [ ] Verify whether there are no changes to the `VERSION` file:
-    ```shell
-    git diff VERSION
-    ```
-    - [ ] If there are changes, commit, submit a PR to the `release-v${MAJOR_VERSION}.${MINOR_VERSION}` branch:
-        ```shell
-        git add VERSION
-        git commit -s -m "chore: bump version to ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
-        ```
-    - [ ] Get the PR merged into the `release-v${MAJOR_VERSION}.${MINOR_VERSION}`, wait for [Build and Test](https://github.com/openchoreo/openchoreo/actions/workflows/build-and-test.yml) to pass
-    - [ ] Reset your local branch again with the `release-v${MAJOR_VERSION}.${MINOR_VERSION}` branch:
-        ```shell
-        git fetch ${GIT_REMOTE}
-        git reset --hard ${GIT_REMOTE}/release-v${MAJOR_VERSION}.${MINOR_VERSION}
-        ```
-- [ ] Verify or wait for [Build and Test](https://github.com/openchoreo/openchoreo/actions/workflows/build-and-test.yml) to pass on the release branch.
+### Patch Release
 
-### Tag the Release
+1. **Release backstage-plugins**
+   - Merge a PR updating `VERSION` to `MAJOR.MINOR.PATCH` on `release-vMAJOR.MINOR`
+   - Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH`
+   - Run [**Prepare Next Version**](https://github.com/openchoreo/backstage-plugins/actions) — `MAJOR`, `MINOR`, `PATCH+1`
+   - Review and merge the version bump PR
 
-- [ ] Ensure that you are in the `release-prep-v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}` branch:
-    ```shell
-    git branch
-    ```
-- [ ] Create a new tag for the release:
-    ```shell
-    git tag -a v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION} -m "Release v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
-    ```
-- [ ] Push the tag to the OpenChoreo repository:
-    ```shell
-    git push ${GIT_REMOTE} v${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}
-    ```
-- [ ] Wait for the [Release](https://github.com/openchoreo/openchoreo/actions/workflows/release.yml) to pass.
-- [ ] Verify the [draft release](https://github.com/openchoreo/openchoreo/releases) created by the above workflow.
-- [ ] Mark as **Latest** if this is the latest release. (If the current release is v1.3.2 while v1.4.0 exists, then skip marking as latest)
-- [ ] Publish the release.
+2. **Release openchoreo**
+   - Merge a PR updating `VERSION` to `MAJOR.MINOR.PATCH` on `release-vMAJOR.MINOR`
+   - Run [**Release Orchestrator**](https://github.com/openchoreo/openchoreo/actions) — `action: full`, `MAJOR`, `MINOR`, `PATCH`
+   - Verify the [draft release](https://github.com/openchoreo/openchoreo/releases) and publish it
+   - Run [**Prepare Next Version**](https://github.com/openchoreo/openchoreo/actions) — `MAJOR`, `MINOR`, `PATCH+1`
+   - Review and merge the version bump PR
+
+3. **Update docs** (on [openchoreo.github.io](https://github.com/openchoreo/openchoreo.github.io))
+   - Update version constants in `versioned_docs/version-vMAJOR.MINOR.x/_constants.mdx`
+   - Update `docusaurus.config.ts` (announcementBar)
+   - Update `docs/changelog.md` and `versioned_docs/version-vMAJOR.MINOR.x/changelog.md`
+   - Update `docs/releases/release-and-support-process.md` (latest patch for this minor line)
+   - Submit a PR to `openchoreo.github.io` with changes
+
+---
+
+### Prerelease (e.g., v1.1.0-rc.1)
+
+1. **Release backstage-plugins**
+   - Merge a PR updating `VERSION` to `MAJOR.MINOR.PATCH-PRE_RELEASE_ID` on the target branch
+   - Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH`, `pre_release_id`
+
+2. **Release openchoreo**
+   - Merge a PR updating `VERSION` to `MAJOR.MINOR.PATCH-PRE_RELEASE_ID` on the target branch
+   - Run [**Release Orchestrator**](https://github.com/openchoreo/openchoreo/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH`, `pre_release_id`
+   - Verify the [draft release](https://github.com/openchoreo/openchoreo/releases) and publish it (mark as Pre-release)
+
+3. **Update docs** (optional — only if docs changes are needed for this prerelease)
+   - Follow the major/minor or patch docs steps above as applicable
