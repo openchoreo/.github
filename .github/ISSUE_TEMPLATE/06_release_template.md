@@ -8,7 +8,7 @@ type: Task
 
 ### Prerequisites
 
-- [ ] `VERSION` file updated to the target release version on the target branch (i.e., main/release-vMAJOR.MINOR) — submit a PR first if it needs updating
+- [ ] `VERSION` file is set to the target release version in both **backstage-plugins** and **openchoreo** repos on the target branch (i.e., main/release-vMAJOR.MINOR) — if not, run the [**Prepare Next Version**](#post-release) workflow to create the bump PR
 - [ ] `CHANGELOG.md` updated with all changes for this version on the target branch
 - [ ] `build-and-test` passing on the target branch
 
@@ -31,6 +31,7 @@ All workflow dispatch triggers should be run from the **default branch (`main`)*
    - [ ] Update `docusaurus.config.ts` (lastVersion, announcementBar, versions map)
    - [ ] Update `docs/changelog.md` and `versioned_docs/version-vMAJOR.MINOR.x/changelog.md`
    - [ ] Update `docs/releases/release-and-support-process.md` (supported versions, latest patch)
+   - [ ] If prereleases were done for this version, remove any prerelease doc version snapshots (e.g., `versioned_docs/version-vMAJOR.MINOR.x-rc.*`)
    - [ ] Submit a PR to `openchoreo.github.io` with all changes (keep open)
 
 4. **Publish release and merge docs PR**
@@ -84,7 +85,7 @@ A temporary `release-vMAJOR.MINOR.PATCH-PRE_RELEASE_ID` branch is created for th
 
 ### Post-Release
 
-Run [**Prepare Next Version**](https://github.com/openchoreo/backstage-plugins/actions) / [**Prepare Next Version**](https://github.com/openchoreo/openchoreo/actions) to generate a PR bumping `VERSION` to the next development version, then review and merge it.
+Run [**Prepare Next Version**](https://github.com/openchoreo/backstage-plugins/actions) / [**Prepare Next Version**](https://github.com/openchoreo/openchoreo/actions) with the params below — the pipeline auto-creates a PR bumping `VERSION` to the next development version. Review and merge the generated PRs.
 
 | Release type | `MAJOR` | `MINOR` | `PATCH` | `PRE_RELEASE_ID` |
 |---|---|---|---|---|
