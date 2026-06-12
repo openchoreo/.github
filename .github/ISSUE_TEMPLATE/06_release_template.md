@@ -14,6 +14,8 @@ type: Task
 
 All workflow dispatch triggers should be run from the **default branch (`main`)** of the respective repository. The workflows auto-resolve the correct target branch at runtime.
 
+> **E2E gate (openchoreo):** every `Release Orchestrator` run is gated on the full e2e suite (~30 min) before the tag is created. To gate up front, cut the branch first with `action: branch`, then run `action: tag` — the gate is reused when the run targets the same commit, so it is not re-run; any new commit (a fix or backport) is gated afresh. `skip_e2e: true` bypasses the gate for declared emergencies only. See the [release guide](https://github.com/openchoreo/openchoreo/blob/main/docs/contributors/release.md#e2e-release-gate).
+
 ---
 
 ### Major/Minor Release
