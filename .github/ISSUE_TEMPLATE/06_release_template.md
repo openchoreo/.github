@@ -34,7 +34,9 @@ All workflow dispatch triggers should be run from the **default branch (`main`)*
    - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH` (tags the release branch cut in step 1)
 
 4. **Update docs** (on [openchoreo.github.io](https://github.com/openchoreo/openchoreo.github.io))
+   - [ ] Ensure the upgrade guide for this release (`docs/platform-engineer-guide/upgrades/v<PREV_MINOR>-to-vMAJOR.MINOR.mdx`) documents all breaking changes and migration steps — it is frozen into the snapshot in the next step
    - [ ] Create a new doc version snapshot: `npm run docusaurus docs:version vMAJOR.MINOR.x`
+   - [ ] Scaffold the next version's upgrade guide in `docs/`: `npm run docs:init-upgrade-guide` (creates `docs/platform-engineer-guide/upgrades/vMAJOR.MINOR-to-vMAJOR.MINOR+1.mdx` from a template and wires it into the sidebar/overview; runs only for stable minors, so it is a no-op for prereleases)
    - [ ] Update version constants in the new `versioned_docs/version-vMAJOR.MINOR.x/_constants.mdx`
    - [ ] Update `docusaurus.config.ts` (lastVersion, announcementBar, versions map)
    - [ ] Update `docs/changelog.md` and `versioned_docs/version-vMAJOR.MINOR.x/changelog.md`
