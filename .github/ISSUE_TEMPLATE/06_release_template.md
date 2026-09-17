@@ -11,12 +11,15 @@ type: Task
 - [ ] `VERSION` file is set to the target release version in both **backstage-plugins** and **openchoreo** repos on the target branch (i.e., main/release-vMAJOR.MINOR) — if not, run the [**Prepare Next Version**](#post-release) workflow to create the bump PR
 - [ ] `CHANGELOG.md` updated with all changes for this version on the target branch
 - [ ] `build-and-test` passing on the target branch
+- [ ] **Major/minor, or a prerelease that creates a release branch:** the observability community-module versions this release ships are published (bump `<module>/VERSION` in [community-modules](https://github.com/openchoreo/community-modules)) and noted for the openchoreo `Release Orchestrator` module version inputs
 
 All workflow dispatch triggers should be run from the **default branch (`main`)** of the respective repository. The workflows auto-resolve the correct target branch at runtime.
 
 > **E2E gate (openchoreo):** every `Release Orchestrator` run is gated on the full e2e suite (~30 min) before the tag is created. To gate up front, cut the branch first with `action: branch`, then run `action: tag` — the gate is reused when the run targets the same commit, so it is not re-run; any new commit (a fix or backport) is gated afresh. `skip_e2e: true` bypasses the gate for declared emergencies only. See the [release guide](https://github.com/openchoreo/openchoreo/blob/main/docs/contributors/release.md#e2e-release-gate).
 
 > **Backstage image dependency:** the gate's UI leg installs Backstage from the `openchoreo-ui` image built by **backstage-plugins**, tagged with that repo's commit SHA. The gate resolves the backstage-plugins release branch (its name mirrors the openchoreo release branch) and pulls its branch-tip image. So **branch backstage-plugins first** (and let its `build-and-test` publish the image) before releasing openchoreo, but **tag backstage-plugins last** — only after the openchoreo tag succeeds — so the backstage-plugins release tag is only cut for a release that passed the gate. When no mirror branch exists (prereleases tag on `main`), the gate falls back to `latest-dev`.
+
+> **Observability module versions (openchoreo):** `main` installs `0.0.0-latest-dev` community modules. Whenever the `Release Orchestrator` creates a release branch, pass `logs_opensearch_version`, `tracing_opensearch_version`, `metrics_prometheus_version`, `events_otel_collector_version`, and `logs_openobserve_version` — the branch job pins them on the new branch and the e2e gate tests those pins. Patch releases keep the branch's pins; to change one, follow the module step under **Patch Release → Release openchoreo** before running the orchestrator. See the [release guide](https://github.com/openchoreo/openchoreo/blob/main/docs/contributors/release.md#default-observability-module-versions).
 
 ---
 
@@ -27,7 +30,7 @@ All workflow dispatch triggers should be run from the **default branch (`main`)*
    - [ ] Wait for `build-and-test` on the new branch to finish publishing the `openchoreo-ui` image — the openchoreo e2e gate's UI leg pulls this branch-tip image
 
 2. **Release openchoreo**
-   - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/openchoreo/actions) — `action: full`, `MAJOR`, `MINOR`, `PATCH` (creates the release branch, runs the e2e gate against the backstage-plugins branch image, and tags the release)
+   - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/openchoreo/actions) — `action: full`, `MAJOR`, `MINOR`, `PATCH`, and the observability module `*_version` inputs (creates the release branch with the module versions pinned, runs the e2e gate against the backstage-plugins branch image, and tags the release)
    - [ ] Verify the [draft release](https://github.com/openchoreo/openchoreo/releases) is created
 
 3. **Tag backstage-plugins** — only after the openchoreo tag succeeds
@@ -37,7 +40,7 @@ All workflow dispatch triggers should be run from the **default branch (`main`)*
    - [ ] Ensure the upgrade guide for this release (`docs/platform-engineer-guide/upgrades/v<PREV_MINOR>-to-vMAJOR.MINOR.mdx`) documents all breaking changes and migration steps — it is frozen into the snapshot in the next step
    - [ ] Create a new doc version snapshot: `npm run docusaurus docs:version vMAJOR.MINOR.x`
    - [ ] Scaffold the next version's upgrade guide in `docs/`: `npm run docs:init-upgrade-guide` (creates `docs/platform-engineer-guide/upgrades/vMAJOR.MINOR-to-vMAJOR.MINOR+1.mdx` from a template and wires it into the sidebar/overview; runs only for stable minors, so it is a no-op for prereleases)
-   - [ ] Update version constants in the new `versioned_docs/version-vMAJOR.MINOR.x/_constants.mdx`
+   - [ ] Update version constants in the new `versioned_docs/version-vMAJOR.MINOR.x/_constants.mdx`, including the observability module keys (`logsOpensearchModule`, `tracingOpensearchModule`, `metricsPrometheusModule`, `eventsOtelCollectorModule`) set to the versions pinned on `release-vMAJOR.MINOR` — print them with `hack/pin-observability-modules.sh --check --ref upstream/release-vMAJOR.MINOR` from an openchoreo `main` checkout
    - [ ] Update `docusaurus.config.ts` (lastVersion, announcementBar, versions map)
    - [ ] Update `docs/changelog.md` and `versioned_docs/version-vMAJOR.MINOR.x/changelog.md`
    - [ ] Update `docs/releases/release-and-support-process.md` (supported versions, latest patch)
@@ -58,6 +61,20 @@ The release branches already exist in both repos, so backstage-plugins is not re
    - [ ] Confirm the patch commits are on the backstage-plugins `release-vMAJOR.MINOR` branch and its `build-and-test` is green (its branch-tip `openchoreo-ui` image is what the openchoreo e2e gate pulls)
 
 2. **Release openchoreo**
+   - [ ] If an observability module version must change for this patch, first merge a PR against `release-vMAJOR.MINOR` (the orchestrator rejects module version inputs for an existing release branch). From an openchoreo checkout:
+
+     ```sh
+     git fetch upstream
+     git switch -c pin-observability-modules-vMAJOR.MINOR upstream/release-vMAJOR.MINOR
+     # Rewrites every file that pins the module (--help lists them)
+     hack/pin-observability-modules.sh --<module>-version X.Y.Z
+     # Fails if anything is unpinned, otherwise prints the pinned versions
+     hack/pin-observability-modules.sh --check
+     git commit -s -am "chore: pin observability-<module> X.Y.Z on release-vMAJOR.MINOR"
+     ```
+
+     Release lines cut before the script existed (v1.2 and older) don't have it — use the `git grep` commands in the [release guide](https://github.com/openchoreo/openchoreo/blob/main/docs/contributors/release.md#default-observability-module-versions) to list the lines to edit by hand.
+
    - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/openchoreo/actions) — `action: full`, `MAJOR`, `MINOR`, `PATCH` (runs the e2e gate against the backstage-plugins branch image, then pushes a tag to the existing release branch)
    - [ ] Verify the [draft release](https://github.com/openchoreo/openchoreo/releases) is created
 
@@ -65,7 +82,7 @@ The release branches already exist in both repos, so backstage-plugins is not re
    - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH` (pushes a tag to the existing release branch)
 
 4. **Update docs** (on [openchoreo.github.io](https://github.com/openchoreo/openchoreo.github.io))
-   - [ ] Update version constants in `versioned_docs/version-vMAJOR.MINOR.x/_constants.mdx`
+   - [ ] Update version constants in `versioned_docs/version-vMAJOR.MINOR.x/_constants.mdx` (including the observability module keys, if their pins changed — print them with `hack/pin-observability-modules.sh --check --ref upstream/release-vMAJOR.MINOR` from an openchoreo `main` checkout)
    - [ ] Update `docusaurus.config.ts` (announcementBar)
    - [ ] Update `docs/changelog.md` and `versioned_docs/version-vMAJOR.MINOR.x/changelog.md`
    - [ ] Update `docs/releases/release-and-support-process.md` (latest patch for this minor line)
@@ -82,7 +99,7 @@ The release branches already exist in both repos, so backstage-plugins is not re
 A temporary `release-vMAJOR.MINOR.PATCH-PRE_RELEASE_ID` branch is created for the **openchoreo** repo (via `action: full`). The **backstage-plugins** repo tags directly on `main` (via `action: tag`). Because no mirror release branch is cut, the openchoreo e2e gate's UI leg falls back to the `latest-dev` `openchoreo-ui` image. The temporary branch can be cleaned up after the final release is done.
 
 1. **Release openchoreo**
-   - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/openchoreo/actions) — `action: full`, `MAJOR`, `MINOR`, `PATCH`, `pre_release_id` (creates a temporary prerelease branch; the e2e gate uses the `latest-dev` backstage image)
+   - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/openchoreo/actions) — `action: full`, `MAJOR`, `MINOR`, `PATCH`, `pre_release_id`, and the observability module `*_version` inputs (creates a temporary prerelease branch with the module versions pinned — the inputs are required whenever the run creates that branch; the e2e gate uses the `latest-dev` backstage image)
    - [ ] Verify the [draft release](https://github.com/openchoreo/openchoreo/releases) is created (will be marked as a prerelease)
 
 2. **Tag backstage-plugins** — only after the openchoreo tag succeeds
