@@ -106,7 +106,7 @@ A temporary `release-vMAJOR.MINOR.PATCH-PRE_RELEASE_ID` branch is created for th
 
 2. **Tag backstage-plugins** — only after the openchoreo tag succeeds
    - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH`, `pre_release_id`, and `commit_sha` set to the `VERSION` bump commit on `main` (tags directly on `main`)
-     > `commit_sha` is **required here**. `action: tag` otherwise fails validation with `action=tag requires an existing release branch (release-vMAJOR.MINOR)`, because a prerelease cuts no release branch in backstage-plugins. Pass the `main` commit whose `VERSION` already reads the release version — the `chore: bump version to ...` commit merged by **Prepare Next Version** — which is what validation checks.
+     > `commit_sha` is **required here**. `action: tag` otherwise fails validation with `action=tag requires an existing release branch (release-vMAJOR.MINOR)`. No branch of that name exists for a prerelease: backstage-plugins cuts none at all, and openchoreo's temporary prerelease branch is named `release-vMAJOR.MINOR.PATCH-PRE_RELEASE_ID` — `release-vMAJOR.MINOR` is only cut at the stable release. Pass the `main` commit whose `VERSION` already reads the release version — the `chore: bump version to ...` commit merged by **Prepare Next Version** — which is what validation checks.
 
 3. **Update docs** (optional — only if docs changes are needed for this prerelease)
    - [ ] Follow the major/minor or patch docs steps above as applicable
