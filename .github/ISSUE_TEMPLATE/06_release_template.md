@@ -15,6 +15,8 @@ type: Task
 
 All workflow dispatch triggers should be run from the **default branch (`main`)** of the respective repository. The workflows auto-resolve the correct target branch at runtime.
 
+> **Module version inputs (openchoreo):** the observability module `*_version` inputs apply **only** to a run that creates the release branch. Passing them on a later `full` or `tag` run against an existing branch fails validation — to change pins, open a PR against the release branch that runs `hack/pin-observability-modules.sh`.
+
 > **E2E gate (openchoreo):** every `Release Orchestrator` run is gated on the full e2e suite (~30 min) before the tag is created. To gate up front, cut the branch first with `action: branch`, then run `action: tag` — the gate is reused when the run targets the same commit, so it is not re-run; any new commit (a fix or backport) is gated afresh. `skip_e2e: true` bypasses the gate for declared emergencies only. See the [release guide](https://github.com/openchoreo/openchoreo/blob/main/docs/contributors/release.md#e2e-release-gate).
 
 > **Backstage image dependency:** the gate's UI leg installs Backstage from the `openchoreo-ui` image built by **backstage-plugins**, tagged with that repo's commit SHA. The gate resolves the backstage-plugins release branch (its name mirrors the openchoreo release branch) and pulls its branch-tip image. So **branch backstage-plugins first** (and let its `build-and-test` publish the image) before releasing openchoreo, but **tag backstage-plugins last** — only after the openchoreo tag succeeds — so the backstage-plugins release tag is only cut for a release that passed the gate. When no mirror branch exists (prereleases tag on `main`), the gate falls back to `latest-dev`.
@@ -103,7 +105,8 @@ A temporary `release-vMAJOR.MINOR.PATCH-PRE_RELEASE_ID` branch is created for th
    - [ ] Verify the [draft release](https://github.com/openchoreo/openchoreo/releases) is created (will be marked as a prerelease)
 
 2. **Tag backstage-plugins** — only after the openchoreo tag succeeds
-   - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH`, `pre_release_id` (tags directly on `main`)
+   - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH`, `pre_release_id`, and `commit_sha` set to the `VERSION` bump commit on `main` (tags directly on `main`)
+     > `commit_sha` is **required here**. `action: tag` otherwise fails validation with `action=tag requires an existing release branch (release-vMAJOR.MINOR)`, because a prerelease cuts no release branch in backstage-plugins. Pass the `main` commit whose `VERSION` already reads the release version — the `chore: bump version to ...` commit merged by **Prepare Next Version** — which is what validation checks.
 
 3. **Update docs** (optional — only if docs changes are needed for this prerelease)
    - [ ] Follow the major/minor or patch docs steps above as applicable
