@@ -45,6 +45,7 @@ All workflow dispatch triggers should be run from the **default branch (`main`)*
    - [ ] Update `docs/changelog.md` and `versioned_docs/version-vMAJOR.MINOR.x/changelog.md`
    - [ ] Update `docs/releases/release-and-support-process.md` (supported versions, latest patch)
    - [ ] If prereleases were done for this version, remove any prerelease doc version snapshots (e.g., `versioned_docs/version-vMAJOR.MINOR.x-rc.*`)
+   - [ ] Prune old doc versions to the latest four — `./scripts/clean-versions.sh`, then remove the pruned entries from the `versions` map in `docusaurus.config.ts` by hand ([Removing Old Versions](https://github.com/openchoreo/openchoreo.github.io#removing-old-versions))
    - [ ] Submit a PR to `openchoreo.github.io` with all changes (keep open)
 
 5. **Publish release and merge docs PR**
