@@ -17,7 +17,7 @@ All workflow dispatch triggers should be run from the **default branch (`main`)*
 
 > **E2E gate (openchoreo):** every `Release Orchestrator` run is gated on the full e2e suite (~30 min) before the tag is created. To gate up front, cut the branch first with `action: branch`, then run `action: tag` — the gate is reused when the run targets the same commit, so it is not re-run; any new commit (a fix or backport) is gated afresh. `skip_e2e: true` bypasses the gate for declared emergencies only. See the [release guide](https://github.com/openchoreo/openchoreo/blob/main/docs/contributors/release.md#e2e-release-gate).
 
-> **Backstage image dependency:** the gate's UI leg installs Backstage from the `openchoreo-ui` image built by **backstage-plugins**, tagged with that repo's commit SHA. The gate resolves the backstage-plugins release branch (its name mirrors the openchoreo release branch) and pulls its branch-tip image. So **branch backstage-plugins first** (and let its `build-and-test` publish the image) before releasing openchoreo, but **tag backstage-plugins last** — only after the openchoreo tag succeeds — so the backstage-plugins release tag is only cut for a release that passed the gate. When no mirror branch exists (prereleases tag on `main`), the gate falls back to `latest-dev`.
+> **Backstage image dependency:** the gate's UI leg installs Backstage from the `openchoreo-ui` image built by **backstage-plugins**, tagged with that repo's commit SHA. The gate resolves the backstage-plugins release branch (its name mirrors the openchoreo release branch) and pulls its branch-tip image. So **branch backstage-plugins first** (and let its `build-and-test` publish the image) before releasing openchoreo, but **tag backstage-plugins last** — only after the openchoreo tag succeeds — so the backstage-plugins release tag is only cut for a release that passed the gate. When no mirror branch exists (prereleases tag on `main`), the gate falls back to `latest-dev`. Note the gate only ever exercises a SHA-tagged image, whereas a real install resolves `.image.tag | default .Chart.AppVersion` — the semver tag created by backstage-plugins' `retag-image` job. A green gate therefore does not prove `openchoreo-ui:vMAJOR.MINOR.PATCH` exists, which is why the **Tag backstage-plugins** step verifies it explicitly.
 
 > **Observability module versions (openchoreo):** `main` installs `0.0.0-latest-dev` community modules. Whenever the `Release Orchestrator` creates a release branch, pass `logs_opensearch_version`, `tracing_opensearch_version`, `metrics_prometheus_version`, `events_otel_collector_version`, and `logs_openobserve_version` — the branch job pins them on the new branch and the e2e gate tests those pins. Patch releases keep the branch's pins; to change one, follow the module step under **Patch Release → Release openchoreo** before running the orchestrator. See the [release guide](https://github.com/openchoreo/openchoreo/blob/main/docs/contributors/release.md#default-observability-module-versions).
 
@@ -35,6 +35,8 @@ All workflow dispatch triggers should be run from the **default branch (`main`)*
 
 3. **Tag backstage-plugins** — only after the openchoreo tag succeeds
    - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH` (tags the release branch cut in step 1)
+   - [ ] **Approve the `npm-publish` environment** when the [release run](https://github.com/openchoreo/backstage-plugins/actions/workflows/release.yml) reaches _Waiting_ — roughly 15 min after the tag, since `build` runs first. Nothing is published, and no OIDC token is minted, before a required reviewer approves.
+   - [ ] Confirm the run went green through `retag-image`, then verify the portal image exists: `docker buildx imagetools inspect ghcr.io/openchoreo/openchoreo-ui:vMAJOR.MINOR.PATCH` — `retag-image` needs `publish-npm`, so an unapproved or failed publish leaves the already-tagged openchoreo release pulling an image that does not exist.
 
 4. **Update docs** (on [openchoreo.github.io](https://github.com/openchoreo/openchoreo.github.io))
    - [ ] Ensure the upgrade guide for this release (`docs/platform-engineer-guide/upgrades/v<PREV_MINOR>-to-vMAJOR.MINOR.mdx`) documents all breaking changes and migration steps — it is frozen into the snapshot in the next step
@@ -81,6 +83,8 @@ The release branches already exist in both repos, so backstage-plugins is not re
 
 3. **Tag backstage-plugins** — only after the openchoreo tag succeeds
    - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH` (pushes a tag to the existing release branch)
+   - [ ] **Approve the `npm-publish` environment** when the [release run](https://github.com/openchoreo/backstage-plugins/actions/workflows/release.yml) reaches _Waiting_ — roughly 15 min after the tag, since `build` runs first. Nothing is published, and no OIDC token is minted, before a required reviewer approves.
+   - [ ] Confirm the run went green through `retag-image`, then verify the portal image exists: `docker buildx imagetools inspect ghcr.io/openchoreo/openchoreo-ui:vMAJOR.MINOR.PATCH` — `retag-image` needs `publish-npm`, so an unapproved or failed publish leaves the already-tagged openchoreo release pulling an image that does not exist.
 
 4. **Update docs** (on [openchoreo.github.io](https://github.com/openchoreo/openchoreo.github.io))
    - [ ] Update version constants in `versioned_docs/version-vMAJOR.MINOR.x/_constants.mdx` (including the observability module keys, if their pins changed — print them with `hack/pin-observability-modules.sh --check --ref upstream/release-vMAJOR.MINOR` from an openchoreo `main` checkout)
@@ -105,6 +109,8 @@ A temporary `release-vMAJOR.MINOR.PATCH-PRE_RELEASE_ID` branch is created for th
 
 2. **Tag backstage-plugins** — only after the openchoreo tag succeeds
    - [ ] Run [**Release Orchestrator**](https://github.com/openchoreo/backstage-plugins/actions) — `action: tag`, `MAJOR`, `MINOR`, `PATCH`, `pre_release_id` (tags directly on `main`)
+   - [ ] **Approve the `npm-publish` environment** when the [release run](https://github.com/openchoreo/backstage-plugins/actions/workflows/release.yml) reaches _Waiting_ — roughly 15 min after the tag, since `build` runs first. Nothing is published, and no OIDC token is minted, before a required reviewer approves.
+   - [ ] Confirm the run went green through `retag-image`, then verify the portal image exists: `docker buildx imagetools inspect ghcr.io/openchoreo/openchoreo-ui:vMAJOR.MINOR.PATCH-PRE_RELEASE_ID` — `retag-image` needs `publish-npm`, so an unapproved or failed publish leaves the already-tagged openchoreo release pulling an image that does not exist.
 
 3. **Update docs** (optional — only if docs changes are needed for this prerelease)
    - [ ] Follow the major/minor or patch docs steps above as applicable
