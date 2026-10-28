@@ -8,7 +8,7 @@ type: Task
 
 ### Prerequisites
 
-- [ ] `VERSION` file is set to the target release version in both **backstage-plugins** and **openchoreo** repos on the target branch (i.e., main/release-vMAJOR.MINOR) — if not, run the [**Prepare Next Version**](#post-release) workflow to create the bump PR
+- [ ] `VERSION` file is set to the target release version in both **backstage-plugins** and **openchoreo** repos on the target branch (i.e., main/release-vMAJOR.MINOR) — if not, run **Prepare Next Version** ([backstage-plugins](https://github.com/openchoreo/backstage-plugins/actions/workflows/prepare-next-version.yml) / [openchoreo](https://github.com/openchoreo/openchoreo/actions/workflows/prepare-next-version.yml)) with `MAJOR`, `MINOR`, `PATCH` set to the target release version to create the bump PR
 - [ ] `CHANGELOG.md` updated with all changes for this version on the target branch
 - [ ] `build-and-test` passing on the target branch
 - [ ] **Major/minor, or a prerelease that creates a release branch:** the observability community-module versions this release ships are published (bump `<module>/VERSION` in [community-modules](https://github.com/openchoreo/community-modules)) and noted for the openchoreo `Release Orchestrator` module version inputs
